@@ -1,4 +1,0 @@
-strealit
-yfinance
-pykrx
-pandas
