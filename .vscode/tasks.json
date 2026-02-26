@@ -13,4 +13,5 @@
         }
     ]
 }
-#Ctrl+Shift+B로 실행시키기_업데이트 완료
+
+#화면상단에run:run_task->git_push_app_으로업데이트
