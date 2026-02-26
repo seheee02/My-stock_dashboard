@@ -9,67 +9,76 @@ from pykrx import stock
 
 st.title("세희의 첫 주식 대시보드 📈")
 
+# --- 상위 그룹 계층 구조 ---
 grouped_tickers = {
-    "미국 빅테크": {
-        "엔비디아 (NVDA)": "NVDA",
-        "애플 (AAPL)": "AAPL",
-        "마이크로소프트 (MSFT)": "MSFT",
-        "알파벳 C (GOOG)": "GOOG"
+    "한국 증시 (KOSPI/KOSDAQ)": {
+        "반도체": {
+            "삼성전자 (005930)": "005930.KS",
+            "SK하이닉스 (000660)": "000660.KS",
+            "한미반도체 (042700)": "042700.KQ"
+        },
+        "에너지/전기전력": {
+            "두산에너빌리티 (034020)": "034020.KS",
+            "한국전력 (015760)": "015760.KS",
+            "삼성전기 (009150)": "009150.KS",
+            "LS ELECTRIC (010120)": "010120.KS",
+            "HD현대일렉트릭 (267260)": "267260.KS"
+        },
+        "의료 AI": {
+            "씨어스테크놀로지 (458870)": "458870.KQ",
+            "뷰노 (338220)": "338220.KQ",
+            "루닛 (328130)": "328130.KQ"
+        },
+        "바이오/헬스케어": {
+            "셀트리온 (068270)": "068270.KS",
+            "삼성바이오로직스 (207940)": "207940.KS",
+            "SK바이오팜 (326030)": "326030.KS",
+            "삼성에피스홀딩스 (373220)": "373220.KQ",  # 수정: .KS -> .KQ (코스닥)
+            "SK바이오사이언스 (302440)": "302440.KS",
+            "대웅제약 (069620)": "069620.KS"  # 대웅제약 추가
+        },
+        "자동차/로봇": {  # 신규 그룹 추가
+            "현대자동차 (005380)": "005380.KS",
+            "현대모비스 (012330)": "012330.KS",
+            "기아 (000270)": "000270.KS"
+        },
+        "방산주": {
+            "한화에어로스페이스 (012450)": "012450.KS",
+            "LIG넥스원 (079550)": "079550.KS",
+            "한국항공우주 (047810)": "047810.KS",
+            "현대로템 (064350)": "064350.KS",
+        },
+        "ISA ETF (주요 거래가능)": {
+            "KODEX 코스피200 (069500)": "069500.KS",
+            "TIGER 미국S&P500 (360200)": "360200.KS",
+            "TIGER 미국나스닥바이오 (195930)": "195930.KS",
+            "TIGER 미국핵심전력인프라 (456460)": "456460.KS",
+            "TIME 글로벌우주테크&방산 (462230)": "462230.KS"
+        },
+        "안전자산(ETF/현물)": {
+            "KODEX 골드현물 (132030)": "132030.KS",
+            "TIGER 미국채10년 (305080)": "305080.KS",
+            "KODEX 단기채권 (153130)": "153130.KS",
+            "KODEX 증권 (102110)": "102110.KS",
+            "KODEX 미국달러 (261240)": "261240.KS"
+        }
     },
-    "한국 반도체": {
-        "삼성전자 (005930)": "005930.KS",
-        "SK하이닉스 (000660)": "000660.KS",
-        "한미반도체 (042700)": "042700.KQ"
-    },
-    # 그룹명 변경 및 대표 전기전력주도주 추가
-    "한국 에너지/전기전력": {
-        "두산에너빌리티 (034020)": "034020.KS",
-        "한국전력 (015760)": "015760.KS",
-        "삼성전기 (009150)": "009150.KS",
-        "LS ELECTRIC (010120)": "010120.KS",
-        "HD현대일렉트릭 (267260)": "267260.KS"
-    },
-    "의료 AI": {
-        "씨어스테크놀로지 (458870)": "458870.KQ",
-        "뷰노 (338220)": "338220.KQ",
-        "루닛 (328130)": "328130.KQ"
-    },
-    "바이오/헬스케어": {
-        "셀트리온 (068270)": "068270.KS",
-        "삼성바이오로직스 (207940)": "207940.KS",
-        "SK바이오팜 (326030)": "326030.KS",
-        "삼성에피스홀딩스 (373220)": "373220.KQ",  # 수정: .KS -> .KQ (코스닥)
-        "SK바이오사이언스 (302440)": "302440.KS"
-    },
-    # ======= 한국 방산주 GROUP 추가 시작 =======
-    "한국 방산주": {
-        "한화에어로스페이스 (012450)": "012450.KS",
-        "LIG넥스원 (079550)": "079550.KS",
-        "한국항공우주 (047810)": "047810.KS",
-        "현대로템 (064350)": "064350.KS",
-    },
-    # ======= 한국 방산주 GROUP 추가 끝 =======
-    "ISA ETF (주요 거래가능)": {
-        "KODEX 코스피200 (069500)": "069500.KS",
-        "TIGER 미국S&P500 (360200)": "360200.KS",
-        "TIGER 미국나스닥바이오 (195930)": "195930.KS",
-        "TIGER 미국핵심전력인프라 (456460)": "456460.KS",
-        "TIME 글로벌우주테크&방산 (462230)": "462230.KS"
-    },
-    "안전자산(ETF/현물)": {
-        "KODEX 골드현물 (132030)": "132030.KS",
-        "TIGER 미국채10년 (305080)": "305080.KS",
-        "KODEX 단기채권 (153130)": "153130.KS",
-        "KODEX 증권 (102110)": "102110.KS",
-        "KODEX 미국달러 (261240)": "261240.KS"
+    "미국 증시 (NASDAQ/NYSE/QQQ)": {
+        "빅테크": {
+            "엔비디아 (NVDA)": "NVDA",
+            "애플 (AAPL)": "AAPL",
+            "마이크로소프트 (MSFT)": "MSFT",
+            "알파벳 C (GOOG)": "GOOG"
+        }
+        # 미국 ETF는 필요 시 미국 그룹에 추가할 수 있음
     }
 }
 
+# --- 업종 매핑도 계층적 키 연결 (불변, 기존대로) ---
 industry_mapping = {
-    "미국 빅테크": ["NVDA", "AAPL", "MSFT", "GOOG"],
-    "한국 반도체": ["005930.KS", "000660.KS", "042700.KQ"],
-    # 그룹명 & 종목 동기화
-    "한국 에너지/전기전력": [
+    "빅테크": ["NVDA", "AAPL", "MSFT", "GOOG"],
+    "반도체": ["005930.KS", "000660.KS", "042700.KQ"],
+    "에너지/전기전력": [
         "034020.KS",  # 두산에너빌리티
         "015760.KS",  # 한국전력
         "009150.KS",  # 삼성전기
@@ -77,19 +86,22 @@ industry_mapping = {
         "267260.KS"   # HD현대일렉트릭
     ],
     "의료 AI": ["458870.KQ", "338220.KQ", "328130.KQ"],
-    "바이오/헬스케어": ["068270.KS", "207940.KS", "326030.KS", "373220.KQ", "302440.KS"],  # 수정: .KS -> .KQ 반영
-    # ======= 산업별 방산주 추가 =======
-    "한국 방산주": ["012450.KS", "079550.KS", "047810.KS", "064350.KS"],
-    # "현대로템 (064350)": "064350.KS" 추가 시, 리스트에 "064350.KS" 추가 필요
+    "바이오/헬스케어": ["068270.KS", "207940.KS", "326030.KS", "373220.KQ", "302440.KS", "069620.KS"],  # 대웅제약 추가
+    "자동차/로봇": ["005380.KS", "012330.KS", "000270.KS"],
+    "방산주": ["012450.KS", "079550.KS", "047810.KS", "064350.KS"],
 }
 
-st.sidebar.header("투자 카테고리/종목 선택")
-category = st.sidebar.selectbox("카테고리를 선택하세요", list(grouped_tickers.keys()))
-stock_names = list(grouped_tickers[category].keys())
-selected_name = st.sidebar.selectbox("종목을 선택하세요", stock_names)
-selected_ticker = grouped_tickers[category][selected_name]
+# ---------- 계층별 드롭다운 ----------
+st.sidebar.header("투자 시장/카테고리/종목 선택")
 
-# --- ETF 판별 로직 ---
+top_level = st.sidebar.selectbox("시장(나라/거래소) 선택", list(grouped_tickers.keys()))
+categories = list(grouped_tickers[top_level].keys())
+category = st.sidebar.selectbox("카테고리를 선택하세요", categories)
+stock_names = list(grouped_tickers[top_level][category].keys())
+selected_name = st.sidebar.selectbox("종목을 선택하세요", stock_names)
+selected_ticker = grouped_tickers[top_level][category][selected_name]
+
+# --- ETF 판별 로직 수정 ---
 def check_is_etf(category, selected_name):
     is_etf = False
     if "ETF" in category or "ETF" in selected_name:
@@ -207,7 +219,6 @@ def fetch_etf_expense_ratio(ticker_obj):
         info = ticker_obj.info if hasattr(ticker_obj, "info") else {}
         ratio = info.get("annualReportExpenseRatio")
         if ratio is not None:
-            # 0.0067(=0.67%) 등으로 나오는 경우가 많으니 %로 변환
             return f"{round(ratio*100, 2)} %"
     except Exception:
         pass
@@ -222,7 +233,6 @@ def fetch_etf_top_holdings(ticker_obj):
     try:
         holdings = getattr(ticker_obj, "fund_holdings", None)
         if holdings is not None and not holdings.empty:
-            # yfinance 최신 버전: Ticker.fund_holdings (DataFrame)
             df = holdings
             top10_df = df.head(10)
             top10 = []
@@ -371,8 +381,6 @@ else:
         return None  # 외국 ETF의 경우 없음
 
     def get_naver_us_etf_url(ticker):
-        # 미국 ETF 등은 네이버 증권에서 종목검색 (상장기호)로 접근이 원칙적으로 어려움.
-        # 대안적으로 네이버 ETF 검색페이지 링크 제공
         return "https://finance.naver.com/sise/etf.naver"
 
     naver_url = None
@@ -387,23 +395,28 @@ else:
 # -------------------------------------------------------------
 
 MEMO_FILE = "memos.json"
+MARKET_MEMO_FILE = "market_memos.json"
 
-def load_memos():
-    if os.path.exists(MEMO_FILE):
+def load_memos(filename=MEMO_FILE):
+    if os.path.exists(filename):
         try:
-            with open(MEMO_FILE, "r", encoding="utf-8") as f:
+            with open(filename, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             return {}
     return {}
 
-def save_memos(memos):
-    with open(MEMO_FILE, "w", encoding="utf-8") as f:
+def save_memos(memos, filename=MEMO_FILE):
+    with open(filename, "w", encoding="utf-8") as f:
         json.dump(memos, f, ensure_ascii=False, indent=2)
 
-memos = load_memos()
+# 개별 종목 메모
+memos = load_memos(MEMO_FILE)
 memo_key = selected_ticker
 default_text = memos.get(memo_key, "")
+
+# 시장/카테고리 전체 메모 (한국 증시/미국 증시용, 모든 하위 그룹에서 공통으로 볼 수 있도록)
+market_memos = load_memos(MARKET_MEMO_FILE)
 
 st.write("---")
 st.subheader("📒 종목 메모")
@@ -413,7 +426,21 @@ col1, col2 = st.columns([1,3])
 with col1:
     if st.button("저장"):
         memos[memo_key] = memo_text
-        save_memos(memos)
+        save_memos(memos, MEMO_FILE)
         st.success("메모가 저장되었습니다!")
 with col2:
     st.caption("※ 종목을 바꿔도 이전에 메모한 내용이 자동으로 불러와집니다.")
+
+st.write("---")
+st.subheader("🌍 시장/카테고리 메모장 (한국/미국 증시 현황, 특징 등 기록)")
+market_memo_key = top_level  # "한국 증시 (KOSPI/KOSDAQ)" 또는 "미국 증시 (NASDAQ/NYSE/QQQ)"
+market_memo_val = market_memos.get(market_memo_key, "")
+
+market_text = st.text_area(
+    f"[{market_memo_key}] 전체 시장/카테고리 메모 (모든 하위 그룹에서 공통으로 표시)", 
+    value=market_memo_val, height=120, key=f"marketmemo_{market_memo_key}"
+)
+if st.button(f"{market_memo_key} 메모 저장"):
+    market_memos[market_memo_key] = market_text
+    save_memos(market_memos, MARKET_MEMO_FILE)
+    st.success("시장/카테고리 메모가 저장되었습니다!")
